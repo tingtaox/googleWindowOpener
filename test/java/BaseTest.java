@@ -9,7 +9,7 @@ public class BaseTest {
 
     public void createDriver() throws MalformedURLException, UnexpectedException {
         // download chromedriver and update the path to the chromedriver
-        System.setProperty("webdriver.chrome.driver", "/Users/tingtaox/Desktop/chromedriver");
+        System.setProperty("webdriver.chrome.driver", "/Users/zhixianb/workspace/files/chromedriver");
         ChromeDriver driver = new ChromeDriver();
         webDriver.set(driver);
     }

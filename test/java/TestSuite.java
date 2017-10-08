@@ -10,7 +10,7 @@ public class TestSuite extends BaseTest {
     public void openWindow1() throws MalformedURLException, UnexpectedException {
         createDriver();
         WebDriver driver = getWebDeriver();
-        driver.get("http://www.google.com");
+        driver.get("http://www.supremenewyork.com/shop/sweatshirts/izf5uylto/apgbrn48y");
     }
 
     @Test
