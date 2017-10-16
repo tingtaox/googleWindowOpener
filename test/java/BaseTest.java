@@ -14,7 +14,7 @@ public class BaseTest {
         webDriver.set(driver);
     }
 
-    public WebDriver getWebDeriver() {
+    public WebDriver getWebDriver() {
         return webDriver.get();
     }
 
