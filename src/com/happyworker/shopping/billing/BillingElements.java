@@ -1,4 +1,4 @@
-package billing;
+package com.happyworker.shopping.billing;
 
 public class BillingElements {
     public final static String ORDER_BILL_NAME_ELEMENT_ID = "order_billing_name";

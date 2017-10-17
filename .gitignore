@@ -1,4 +1,4 @@
 .idea/
 target/
 *.iml
-**/billing/BillingInfo.java
+src/com/happyworker/shopping/billing/BillingInfo.java
