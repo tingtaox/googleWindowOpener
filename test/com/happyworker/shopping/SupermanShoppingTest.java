@@ -1,5 +1,6 @@
 package com.happyworker.shopping;
 
+import com.happyworker.shopping.service.SupermanShopping;
 import org.testng.annotations.Test;
 
 public class SupermanShoppingTest {

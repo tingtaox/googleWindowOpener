@@ -1,10 +1,8 @@
-package com.happyworker.shopping;
+package com.happyworker.shopping.service;
 
 import com.happyworker.shopping.billing.BillingElements;
 import com.happyworker.shopping.billing.BillingInfo;
 import com.happyworker.shopping.model.OrderTarget;
-import java.util.ArrayList;
-import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -15,31 +13,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class SupermanShopping {
 
-    public SupermanShopping() {
-//        System.setProperty("webdriver.chrome.driver", "/Users/zhixianb/workspace/files/chromedriver");
-    }
-
-
     public void openWindow(OrderTarget target, int num) {
         System.out.println(target.getUrl() + ", Window number " + num + ", Start shopping ~~~~~~~~ ");
 
-        WebDriver driver = null;
+        WebDriver driver;
         try {
             driver = new ChromeDriver();
-//            driver.get("http://www.supremenewyork.com/shop/new");
-//
-//            // New release list page, find list of elements to buy and click to each product page.
-//            System.out.println("New release list page: " + driver.getCurrentUrl());
-//            WebElement shopNewCart = driver.findElement(By.id("container"));
-//            List<WebElement> newReleases = shopNewCart.findElements(By.className("inner-article"));
-//            System.out.println("Number of new release found: " + newReleases.productSize());
-//
-//            List<WebElement> toBuyItems = selectToBuy(newReleases);
-//
-//            // TODO: 10/8/17 get first item only for now, ignoring others, need figure out logic to select products
-//            assert !toBuyItems.isEmpty();
-//            WebElement toBuyElement = toBuyItems.get(0);
-//            toBuyElement.click();
 
             driver.get(target.getUrl());
             // Product page, 1. select productSize, 2. add to cart
@@ -64,7 +43,7 @@ public class SupermanShopping {
 
             // Wait to avoid robot check
             Thread.sleep(3000);
-//            clickProcessPayment(driver);
+            clickProcessPayment(driver);
 
             System.out.println(target.getUrl() + ", closing window " + num);
             driver.close();
@@ -135,22 +114,6 @@ public class SupermanShopping {
 
     private void selectSize(WebDriver driver, String size) {
         driver.findElement(By.id("s")).sendKeys(size);
-    }
-
-    private List<WebElement> selectToBuy(List<WebElement> newReleases) {
-        List<WebElement> toBuyElements = new ArrayList<WebElement>();
-        for (WebElement element : newReleases) {
-            if (ifWorthBuy(element)) {
-                toBuyElements.add(element);
-            }
-        }
-
-        return toBuyElements;
-    }
-
-    private boolean ifWorthBuy(WebElement newReleases) {
-        // TODO: 10/8/17 Fill to buy algorithm, can simply filter by name
-        return true;
     }
 
 

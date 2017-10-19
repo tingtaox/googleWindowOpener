@@ -1,7 +1,8 @@
 package com.happyworker.shopping;
 
 import com.happyworker.shopping.model.OrderTarget;
-import java.util.ArrayList;
+import com.happyworker.shopping.service.SupermanShopping;
+import com.happyworker.shopping.service.TargetLocator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -9,22 +10,18 @@ import java.util.concurrent.Executors;
 public class BrowserApp {
 
     private final static int MAX_WORKING_WINDOW = 10;
-    private final static int NUMBER_OF_ORDER_ATTEMPT = 5;
+    private final static int NUMBER_OF_ORDER_ATTEMPT = 10;
 
     public static void main(String[] args) {
         // download chromedriver and update the path to the chromedriver
         System.setProperty("webdriver.chrome.driver", "/Users/zhixianb/workspace/files/chromedriver");
 
-        List<OrderTarget> targets = new ArrayList<>();
-        // TODO: 10/18/17 past url and size here.
-        targets.add(OrderTarget.builder()
-                .url("http://www.supremenewyork.com/shop/jackets/izbgqk5od/jd3no7sar?alt=1")
-                .productSize("Large")
-                .build());
-        targets.add(OrderTarget.builder()
-                .url("http://www.supremenewyork.com/shop/hats/e5ftzpd3r/ba5hj0kyx")
-                .build());
+        List<OrderTarget> targets = TargetLocator.findTargets();
 
+        shopping(targets);
+    }
+
+    private static void shopping(List<OrderTarget> targets) {
         ExecutorService executor = Executors.newFixedThreadPool(MAX_WORKING_WINDOW);
         final SupermanShopping superman = new SupermanShopping();
 
@@ -35,11 +32,17 @@ public class BrowserApp {
                     superman.openWindow(target, windowNum);
                 };
                 executor.execute(shopper);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
             }
 
             // Wait sometime before next window
             try {
-                Thread.sleep(3000);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
