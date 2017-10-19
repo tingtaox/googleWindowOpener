@@ -2,12 +2,12 @@ package com.happyworker.shopping;
 
 import org.testng.annotations.Test;
 
-public class SupermanWindowTest {
+public class SupermanShoppingTest {
 
 
     @Test
     public void testOpenWindow() throws Exception {
-        SupermanWindow superman = new SupermanWindow();
+        SupermanShopping superman = new SupermanShopping();
         System.out.println(System.getProperty("webdriver.chrome.driver"));
 
 

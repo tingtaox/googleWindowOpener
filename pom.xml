@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>sauce-project</artifactId>
-    <groupId>com.yourcompany</groupId>
+    <artifactId>superman-shopping</artifactId>
+    <groupId>com.happyworker</groupId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>sauce_quickstart</name>
+    <name>superman-shopping</name>
     <description>A sample Maven project that demonstrates how to integrate Sauce OnDemand with WebDriver tests
         that run using TestNG
     </description>
@@ -43,13 +43,18 @@
             <version>2.6</version>
         </dependency>
         <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.18</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>RELEASE</version>
         </dependency>
-
-
-
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
