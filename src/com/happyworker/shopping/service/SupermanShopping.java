@@ -1,14 +1,14 @@
 package com.happyworker.shopping.service;
 
+import static com.happyworker.shopping.BrowserApp.TO_BUY;
 import com.happyworker.shopping.billing.BillingElements;
 import com.happyworker.shopping.billing.BillingInfo;
 import com.happyworker.shopping.model.OrderTarget;
+import static com.happyworker.shopping.util.PageLoadWaiting.waitPageLoadByCSS;
+import static com.happyworker.shopping.util.PageLoadWaiting.waitPageLoadById;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 
 public class SupermanShopping {
@@ -43,7 +43,9 @@ public class SupermanShopping {
 
             // Wait to avoid robot check
             Thread.sleep(3000);
-            clickProcessPayment(driver);
+            if (TO_BUY) {
+                clickProcessPayment(driver);
+            }
 
             System.out.println(target.getUrl() + ", closing window " + num);
             driver.close();
@@ -89,23 +91,6 @@ public class SupermanShopping {
         // Some good refer, find by multiple class name: https://stackoverflow.com/a/21714006/3735335
         waitPageLoadByCSS(driver, "a.button.checkout");
         driver.findElement(By.cssSelector("a.button.checkout")).click();
-    }
-
-    private void waitPageLoadById(final WebDriver driver, final String id) {
-        waitPageLoad(driver, By.id(id));
-    }
-
-    private void waitPageLoadByCSS(final WebDriver driver, final String css) {
-        waitPageLoad(driver, By.cssSelector(css));
-    }
-
-    private void waitPageLoad(final WebDriver driver, final By waitFactor) {
-        new WebDriverWait(driver, 10).until(new ExpectedCondition<Boolean>() {
-            public Boolean apply(WebDriver arg0) {
-                WebElement element = driver.findElement(waitFactor);
-                return element.isDisplayed();
-            }
-        });
     }
 
     private void addToCart(WebDriver driver) {
