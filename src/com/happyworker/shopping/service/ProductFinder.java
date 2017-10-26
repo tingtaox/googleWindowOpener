@@ -16,23 +16,32 @@ public class ProductFinder {
     public List<OrderTarget> findTargetsWithRetry(final List<List<String>> keyWords, int retryNum) {
 
         try {
-            return findTargets(keyWords);
-        } catch (Exception e) {
-            --retryNum;
-            System.out.println("Last find targets failed, retry left: " + retryNum);
-            if (retryNum > 0) {
-                try {
-                    Thread.sleep(new Random().nextInt(3)*1000);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
-                return findTargetsWithRetry(keyWords, retryNum);
+            List<OrderTarget> targets = findTargets(keyWords);
+            if (targets.isEmpty()) {
+                return triggerRetry(keyWords, retryNum);
             } else {
-                System.out.println("Failed after all retry.");
-                return new ArrayList<>();
+                return targets;
             }
+        } catch (Exception e) {
+            return triggerRetry(keyWords, retryNum);
         }
 
+    }
+
+    private List<OrderTarget> triggerRetry(List<List<String>> keyWords, int retryNum) {
+        --retryNum;
+        System.out.println("Last find targets failed, retry left: " + retryNum);
+        if (retryNum > 0) {
+            try {
+                Thread.sleep(new Random().nextInt(3)*1000);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
+            return findTargetsWithRetry(keyWords, retryNum);
+        } else {
+            System.out.println("Failed after all retry.");
+            return new ArrayList<>();
+        }
     }
 
         /**

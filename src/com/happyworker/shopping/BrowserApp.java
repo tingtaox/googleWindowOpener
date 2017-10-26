@@ -11,14 +11,13 @@ import java.util.concurrent.Executors;
 
 public class BrowserApp {
     public final static boolean TO_BUY = false;
-    public final static int FINDER_JUMP_LENGTH = 1;
 
     private final static int MAX_WORKING_WINDOW = 10;
     private final static int NUMBER_OF_ORDER_ATTEMPT = 10;
 
     private final static List<List<String>> TITLE_KEY_WORDS = Arrays.asList(
 //            Arrays.asList("New Era", "Reflective", "Headband"),
-            Arrays.asList("Packable Ripstop Pant")
+            Arrays.asList("Hooded Logo Half Zip Pullover")
     );
 
     public static void main(String[] args) throws IOException {
@@ -27,7 +26,7 @@ public class BrowserApp {
 
 //        System.out.println(Arrays.deepToString(TITLE_KEY_WORDS.toArray()));
 
-        List<OrderTarget> targets = new ProductFinder().findTargetsWithRetry(TITLE_KEY_WORDS, 5);
+        List<OrderTarget> targets = new ProductFinder().findTargetsWithRetry(TITLE_KEY_WORDS, 10);
 
         shopping(targets);
     }

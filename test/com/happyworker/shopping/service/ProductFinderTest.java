@@ -38,7 +38,7 @@ public class ProductFinderTest {
                 Arrays.asList("New Era", "Reflective", "Headband")
         );
 
-        assertEquals(0, productFinder.findTargetsWithRetry(keyWords, 5).size());
+        assertEquals(0, productFinder.findTargetsWithRetry(keyWords, 3).size());
     }
 
 
