@@ -3,6 +3,7 @@ package com.happyworker.shopping;
 import com.happyworker.shopping.model.OrderTarget;
 import com.happyworker.shopping.service.ProductFinder;
 import com.happyworker.shopping.service.SupermanShopping;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -10,7 +11,7 @@ import java.util.concurrent.Executors;
 
 public class BrowserApp {
     public final static boolean TO_BUY = false;
-    public final static int FINDER_JUMP_LENGTH = 3;
+    public final static int FINDER_JUMP_LENGTH = 1;
 
     private final static int MAX_WORKING_WINDOW = 10;
     private final static int NUMBER_OF_ORDER_ATTEMPT = 10;
@@ -20,13 +21,13 @@ public class BrowserApp {
             Arrays.asList("Packable Ripstop Pant")
     );
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // download chromedriver and update the path to the chromedriver
         System.setProperty("webdriver.chrome.driver", "/Users/zhixianb/workspace/files/chromedriver");
 
 //        System.out.println(Arrays.deepToString(TITLE_KEY_WORDS.toArray()));
 
-        List<OrderTarget> targets = new ProductFinder().findTargets(TITLE_KEY_WORDS);
+        List<OrderTarget> targets = new ProductFinder().findTargetsWithRetry(TITLE_KEY_WORDS, 5);
 
         shopping(targets);
     }

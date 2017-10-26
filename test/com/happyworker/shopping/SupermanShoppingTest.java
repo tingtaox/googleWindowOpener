@@ -1,7 +1,7 @@
 package com.happyworker.shopping;
 
 import com.happyworker.shopping.service.SupermanShopping;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 public class SupermanShoppingTest {
 

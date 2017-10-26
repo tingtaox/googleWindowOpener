@@ -1,52 +1,75 @@
 package com.happyworker.shopping.service;
 
-import static com.happyworker.shopping.BrowserApp.FINDER_JUMP_LENGTH;
 import com.happyworker.shopping.model.OrderTarget;
-import com.happyworker.shopping.util.PageLoadWaiting;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import java.util.Random;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 public class ProductFinder {
+    String SUPREME_HOME_URL = "http://www.supremenewyork.com";
 
-    /**
-     * Select target by clicking through and check title.
-     * If a title contains given key words, pick it.
-     */
-    public List<OrderTarget> findTargets(final List<List<String>> keyWords) {
+    public List<OrderTarget> findTargetsWithRetry(final List<List<String>> keyWords, int retryNum) {
 
-        List<OrderTarget> targets = new ArrayList<>();
-
-        WebDriver driver = new ChromeDriver();
-        driver.get("http://www.supremenewyork.com/shop/new");
-        PageLoadWaiting.waitPageLoadById(driver, "container");
-
-        // New release list page, find list of elements to buy and click to each product page.
-        WebElement shopNewCart = driver.findElement(By.id("container"));
-        List<WebElement> releaseElements = shopNewCart.findElements(By.tagName("a"));
-        System.out.println("Number of new release found: " + releaseElements.size());
-
-        List<String> releaseLinks = new ArrayList<>();
-        for (WebElement element : releaseElements) {
-            releaseLinks.add(element.getAttribute("href"));
-        }
-
-        for (int i = releaseLinks.size() - 1; i >= 0; i -= FINDER_JUMP_LENGTH) {
-
-            driver.navigate().to(releaseLinks.get(i));
-            PageLoadWaiting.waitPageLoadById(driver, "details");
-            WebElement detailsEl = driver.findElement(By.id("details"));
-            String title = detailsEl.findElement(By.cssSelector("h1")).getText();
-
-            if (isRight(keyWords, title)) {
-                System.out.println("steve test: " + releaseLinks.get(i));
-                targets.add(OrderTarget.builder().url(releaseLinks.get(i)).build());
+        try {
+            return findTargets(keyWords);
+        } catch (Exception e) {
+            --retryNum;
+            System.out.println("Last find targets failed, retry left: " + retryNum);
+            if (retryNum > 0) {
+                try {
+                    Thread.sleep(new Random().nextInt(3)*1000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                return findTargetsWithRetry(keyWords, retryNum);
+            } else {
+                System.out.println("Failed after all retry.");
+                return new ArrayList<>();
             }
         }
 
+    }
+
+        /**
+         * Select target by clicking through and check title.
+         * If a title contains given key words, pick it.
+         */
+    public List<OrderTarget> findTargets(final List<List<String>> keyWords) throws IOException {
+        List<OrderTarget> targets = new ArrayList<>();
+
+        //Get link list for new released items
+        Document newReleasePage = Jsoup
+                .connect(SUPREME_HOME_URL + "/shop/new")
+                .timeout(3000)
+                .get();
+        Element shopNewCart = newReleasePage.getElementById("container");
+        Elements releaseElements = shopNewCart.getElementsByTag("a");
+        System.out.println("Number of new release found: " + releaseElements.size());
+
+        List<String> releaseLinks = new ArrayList<>();
+        for (Element element : releaseElements) {
+            releaseLinks.add(SUPREME_HOME_URL + element.attr("href"));
+        }
+
+        // Check title of each link, check title from the link, find matched links and add them to results
+        for (int i = releaseLinks.size() - 1; i >= 0; ) {
+            Document productPage = Jsoup.connect(releaseLinks.get(i)).timeout(3000).get();
+            String title =  productPage.select("#details h1").text();
+
+            if (isRight(keyWords, title)) {
+                System.out.println("steve test, selected link: " + releaseLinks.get(i));
+                targets.add(OrderTarget.builder().url(releaseLinks.get(i)).build());
+                i--;
+            } else {
+                i -= productPage.select("#details ul.styles li").size();
+            }
+
+        }
 
         return targets;
 
@@ -78,21 +101,5 @@ public class ProductFinder {
         }
         return true;
     }
-
-//    private List<WebElement> selectToBuy(List<WebElement> newReleases) {
-//        List<WebElement> toBuyElements = new ArrayList<WebElement>();
-//        for (WebElement element : newReleases) {
-//            if (ifWorthBuy(element)) {
-//                toBuyElements.add(element);
-//            }
-//        }
-//
-//        return toBuyElements;
-//    }
-//
-//    private boolean ifWorthBuy(WebElement newReleases) {
-//        // TODO: 10/8/17 Fill to buy algorithm, can simply filter by name
-//        return true;
-//    }
 
 }
