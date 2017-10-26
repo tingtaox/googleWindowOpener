@@ -73,7 +73,9 @@ public class ProductFinder {
             if (isRight(keyWords, title)) {
                 System.out.println("steve test, selected link: " + releaseLinks.get(i));
                 targets.add(OrderTarget.builder().url(releaseLinks.get(i)).build());
-                i--;
+                i -= productPage.select("#details ul.styles li").size();
+                // TODO: 10/26/17 return lists of un-duplicated products
+//                i--;
             } else {
                 i -= productPage.select("#details ul.styles li").size();
             }

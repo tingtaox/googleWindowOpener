@@ -6,6 +6,7 @@ import com.happyworker.shopping.billing.BillingInfo;
 import com.happyworker.shopping.model.OrderTarget;
 import static com.happyworker.shopping.util.PageLoadWaiting.waitPageLoadByCSS;
 import static com.happyworker.shopping.util.PageLoadWaiting.waitPageLoadById;
+import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -13,7 +14,38 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 public class SupermanShopping {
 
-    public void openWindow(OrderTarget target, int num) {
+
+    public void shopMultiple(List<OrderTarget> targets, int num) {
+        System.out.println(targets + ", Window number " + num + ", Start shopping ~~~~~~~~ ");
+
+        WebDriver driver;
+        try {
+            driver = new ChromeDriver();
+
+            for (OrderTarget target: targets) {
+                driver.navigate().to(target.getUrl());
+                // Product page, 1. select productSize, 2. add to cart
+                System.out.println("Product page: " + driver.getCurrentUrl());
+                waitPageLoadById(driver, "details");
+                // Set size if given
+                if (target.getProductSize() != null) {
+                    selectSize(driver, target.getProductSize());
+                }
+                addToCart(driver);
+            }
+
+            checkoutItems(driver);
+
+            System.out.println(targets.size() + ", closing window " + num);
+            driver.close();
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void shopSingle(OrderTarget target, int num) {
         System.out.println(target.getUrl() + ", Window number " + num + ", Start shopping ~~~~~~~~ ");
 
         WebDriver driver;
@@ -23,38 +55,46 @@ public class SupermanShopping {
             driver.get(target.getUrl());
             // Product page, 1. select productSize, 2. add to cart
             System.out.println("Product page: " + driver.getCurrentUrl());
-            waitPageLoadById(driver, "s");
-            // Set size if needed
+            waitPageLoadById(driver, "details");
+            // Set size if given
             if (target.getProductSize() != null) {
                 selectSize(driver, target.getProductSize());
             }
             addToCart(driver);
-            goCheckOut(driver);
 
-            //Checkout page, 1. fill milling billing, 2. fill credit card billing, 3. click process payment button ==> order finished.
-            System.out.println("Checkout page: " + driver.getCurrentUrl());
-            waitPageLoadById(driver, BillingElements.ORDER_BILL_NAME_ELEMENT_ID);
-
-            // Wait to avoid robot check, filling zip code calls backend.
-            Thread.sleep(2000);
-            fillBillingInfo(driver);
-            fillCreditCardInfo(driver);
-            clickAcknowledge(driver);
-
-            // Wait to avoid robot check
-            Thread.sleep(3000);
-            if (TO_BUY) {
-                clickProcessPayment(driver);
-            }
+            checkoutItems(driver);
 
             System.out.println(target.getUrl() + ", closing window " + num);
-            driver.close();
+//            driver.close();
 
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
 
 
+
+
+
+
+    private void checkoutItems(WebDriver driver) throws InterruptedException {
+        goCheckOut(driver);
+
+        //Checkout page, 1. fill milling billing, 2. fill credit card billing, 3. click process payment button ==> order finished.
+        System.out.println("Checkout page: " + driver.getCurrentUrl());
+        waitPageLoadById(driver, BillingElements.ORDER_BILL_NAME_ELEMENT_ID);
+
+        // Wait to avoid robot check, filling zip code calls backend.
+        Thread.sleep(2000);
+        fillBillingInfo(driver);
+        fillCreditCardInfo(driver);
+        clickAcknowledge(driver);
+
+        // Wait to avoid robot check
+        Thread.sleep(3000);
+        if (TO_BUY) {
+                clickProcessPayment(driver);
+        }
     }
 
     private void clickAcknowledge(WebDriver driver) {
@@ -66,7 +106,10 @@ public class SupermanShopping {
     }
 
     private void fillCreditCardInfo(WebDriver driver) {
-        driver.findElement(By.id(BillingElements.CREDIT_CARD_NUMBER_ELEMENT_ID)).sendKeys(BillingInfo.CREDIT_CARD_NUMBER);
+        driver.findElement(By.id(BillingElements.CREDIT_CARD_NUMBER_ELEMENT_ID)).clear();
+        driver.findElement(By.id(BillingElements.CREDIT_CARD_NUMBER_ELEMENT_ID)).sendKeys(BillingInfo.CREDIT_CARD_NUMBER.substring(0,1));
+        snap();
+        driver.findElement(By.id(BillingElements.CREDIT_CARD_NUMBER_ELEMENT_ID)).sendKeys(BillingInfo.CREDIT_CARD_NUMBER.substring(1));
         driver.findElement(By.id(BillingElements.CREDIT_CARD_CVV_ELEMENT_ID)).sendKeys(BillingInfo.CREDIT_CARD_CVV);
         driver.findElement(By.id(BillingElements.CREDIT_CARD_EXP_MONTH_ELEMENT_ID)).sendKeys(BillingInfo.CREDIT_CARD_EXP_MONTH);
         driver.findElement(By.id(BillingElements.CREDIT_CARD_EXP_YEAR_ELEMENT_ID)).sendKeys(BillingInfo.CREDIT_CARD_EXP_YEAR);
@@ -75,6 +118,7 @@ public class SupermanShopping {
     private void fillBillingInfo(WebDriver driver) {
         driver.findElement(By.id(BillingElements.ORDER_BILL_NAME_ELEMENT_ID)).sendKeys(BillingInfo.ORDER_BILL_NAME);
         driver.findElement(By.id(BillingElements.ORDER_EMAIL_ELEMENT_ID)).sendKeys(BillingInfo.ORDER_EMAIL);
+        driver.findElement(By.id(BillingElements.ORDER_TEL_NUMBER_ELEMENT_ID)).clear();
         driver.findElement(By.id(BillingElements.ORDER_TEL_NUMBER_ELEMENT_ID)).sendKeys(BillingInfo.ORDER_TEL_NUMBER);
         driver.findElement(By.id(BillingElements.ORDER_ADDRESS_ELEMENT_ID)).sendKeys(BillingInfo.ORDER_ADDRESS);
         driver.findElement(By.id(BillingElements.ORDER_ZIP_ELEMENT_ID)).sendKeys(BillingInfo.ORDER_ZIP);
@@ -101,5 +145,12 @@ public class SupermanShopping {
         driver.findElement(By.id("s")).sendKeys(size);
     }
 
+    private void snap() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

@@ -16,8 +16,11 @@ public class BrowserApp {
     private final static int NUMBER_OF_ORDER_ATTEMPT = 10;
 
     private final static List<List<String>> TITLE_KEY_WORDS = Arrays.asList(
-//            Arrays.asList("New Era", "Reflective", "Headband"),
-            Arrays.asList("Hooded Logo Half Zip Pullover")
+//            Arrays.asList("Packable Ripstop Pant"),
+//            Arrays.asList("Thermal Crew")
+            Arrays.asList("Hooded Logo Half Zip Pullover"),
+            Arrays.asList("Hooded", "Half Zip", "Pullover"),
+            Arrays.asList("Champion", "Arc Logo Zip Up Sweat")
     );
 
     public static void main(String[] args) throws IOException {
@@ -31,25 +34,16 @@ public class BrowserApp {
         shopping(targets);
     }
 
-    // TODO: 10/20/17 create method to shop multiple items instead of single one
     private static void shopping(List<OrderTarget> targets) {
         ExecutorService executor = Executors.newFixedThreadPool(MAX_WORKING_WINDOW);
         final SupermanShopping superman = new SupermanShopping();
 
         for (int i = NUMBER_OF_ORDER_ATTEMPT; i > 0; --i) {
             int windowNum = i;
-            for (OrderTarget target : targets) {
-                Runnable shopper = () -> {
-                    superman.openWindow(target, windowNum);
-                };
-                executor.execute(shopper);
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-            }
+            Runnable shopper = () -> {
+                superman.shopMultiple(targets, windowNum);
+            };
+            executor.execute(shopper);
 
             // Wait sometime before next window
             try {
